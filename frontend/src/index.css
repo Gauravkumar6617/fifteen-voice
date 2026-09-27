@@ -1,0 +1,298 @@
+:root {
+  --shelf: #e8ecea; /* page background */
+  --label: #ffffff; /* panels */
+  --ink: #18213a; /* text, borders, focus ring */
+  --ink-2: #5c6475; /* secondary text, live partial transcript */
+  --sticker: #ffce1f; /* markdown sticker, primary button */
+  --loss: #c8102e; /* errors */
+  --live: #0e7c55; /* listening indicator */
+  --rule: color-mix(in srgb, var(--ink) 12%, transparent);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--shelf);
+  color: var(--ink);
+  font: 400 16px/1.5 "Archivo", system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+
+h2,
+p,
+ol {
+  margin: 0;
+  padding: 0;
+}
+
+ol {
+  list-style: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.muted,
+.detail {
+  color: var(--ink-2);
+}
+
+/* Layout: header over stage | side panels. Desktop fills the window; the panels scroll. */
+.app {
+  height: 100dvh;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  grid-template-areas: "brand store status";
+  align-items: center;
+  gap: 16px;
+  padding: 12px 24px;
+  background: var(--label);
+  border-bottom: 1px solid var(--rule);
+}
+
+.wordmark {
+  grid-area: brand;
+  font-size: 1.75rem;
+  font-weight: 800;
+  font-stretch: 70%;
+  line-height: 1;
+}
+
+.store {
+  grid-area: store;
+  color: var(--ink-2);
+}
+
+.status {
+  grid-area: status;
+  justify-self: end;
+  font-weight: 600;
+}
+
+.dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 8px;
+  border-radius: 50%;
+  background: var(--ink-2);
+}
+
+[data-status="listening"] .dot {
+  background: var(--live);
+}
+
+[data-status="speaking"] .dot {
+  background: var(--ink);
+}
+
+[data-status="error"] {
+  color: var(--loss);
+}
+
+[data-status="error"] .dot {
+  background: var(--loss);
+}
+
+main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
+}
+
+/* Stage: sticker, Talk button, mic level. */
+.stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  padding: 32px;
+}
+
+.sticker {
+  width: min(100%, 36rem);
+  padding: 24px 32px 28px;
+  background: var(--sticker);
+  border-radius: 6px;
+  rotate: -1.5deg;
+  text-align: center;
+}
+
+.heard {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.said {
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 800;
+  font-stretch: 70%;
+  line-height: 1.05;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+}
+
+/* The one moment of motion: a final transcript stamps the sticker. */
+.stamp {
+  animation: stamp 180ms ease-out;
+}
+
+@keyframes stamp {
+  from {
+    scale: 1.06;
+  }
+  to {
+    scale: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stamp {
+    animation: none;
+  }
+}
+
+.talk {
+  min-width: 12rem;
+  padding: 14px 32px;
+  font-size: 1.125rem;
+  font-weight: 600;
+  background: var(--sticker);
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.talk[aria-pressed="true"] {
+  background: var(--label);
+}
+
+.level {
+  width: 12rem;
+  height: 4px;
+  background: var(--rule);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.level > div {
+  height: 100%;
+  background: var(--ink);
+}
+
+/* Side panels. */
+aside {
+  display: grid;
+  grid-template-rows: minmax(0, 3fr) minmax(0, 2fr);
+  background: var(--label);
+  border-left: 1px solid var(--rule);
+}
+
+aside section {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 16px 20px;
+}
+
+aside section + section {
+  border-top: 1px solid var(--rule);
+}
+
+h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+/* column-reverse keeps the scroll pinned to the newest line; margin-bottom: auto keeps short lists at the top. */
+.scroll {
+  flex: 1;
+  display: flex;
+  flex-direction: column-reverse;
+  overflow-y: auto;
+}
+
+.scroll > div {
+  margin-bottom: auto;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr;
+  gap: 12px;
+  padding: 6px 0;
+}
+
+.who {
+  font-weight: 600;
+}
+
+.activity li {
+  padding: 6px 0;
+  font-weight: 600;
+}
+
+.activity .detail {
+  display: block;
+  font-weight: 400;
+  overflow-wrap: anywhere;
+}
+
+.loss {
+  color: var(--loss);
+}
+
+@media (max-width: 799px) {
+  .app {
+    height: auto;
+    min-height: 100dvh;
+  }
+
+  header {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "brand status"
+      "store store";
+    gap: 4px 16px;
+    padding: 12px 16px;
+  }
+
+  main {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .stage {
+    padding: 32px 16px;
+  }
+
+  aside {
+    grid-template-rows: none;
+    border-left: 0;
+    border-top: 1px solid var(--rule);
+  }
+
+  aside section {
+    padding: 16px;
+  }
+}
